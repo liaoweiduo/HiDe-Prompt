@@ -4,9 +4,9 @@ seed=42
 #for seed in 42 40 44
 #do
 python -m torch.distributed.launch \
-        --nproc_per_node=8 \
+        --nproc_per_node=1 \
         --use_env main.py \
-        cifar100_hideprompt_5e \
+        cgqa_hideprompt_5e \
         --original_model vit_base_patch16_224 \
         --model vit_base_patch16_224 \
         --batch-size 24 \
@@ -23,10 +23,10 @@ python -m torch.distributed.launch \
 #for seed in 42 40 44
 #do
 python -m torch.distributed.launch \
-	--nproc_per_node=8 \
+	--nproc_per_node=1 \
 	--master_port='29501' \
 	--use_env main.py \
-	cifar100_hideprompt_5e \
+	cgqa_hideprompt_5e \
 	--model vit_base_patch16_224 \
 	--original_model vit_base_patch16_224 \
 	--batch-size 24 \
