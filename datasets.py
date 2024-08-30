@@ -3,6 +3,7 @@ import random
 import torch
 from torch.utils.data.dataset import Subset
 from torchvision import datasets, transforms
+from torchvision.transforms.functional import crop, InterpolationMode
 
 from timm.data import create_transform
 
@@ -12,7 +13,8 @@ import utils
 import math
 from functools import partial
 
-__all__ = ['build_continual_dataloader', 'get_dataset', 'build_upstream_continual_dataloader', 'build_transform', 'build_cifar_transform']
+__all__ = ['build_continual_dataloader', 'get_dataset', 'build_upstream_continual_dataloader', 'build_transform',
+           'build_cifar_transform', 'build_cgqa_transform']
 
 class Lambda(transforms.Lambda):
     def __init__(self, lambd, nb_classes):
@@ -36,6 +38,9 @@ def build_continual_dataloader(args):
     if 'cifar' in args.dataset.lower():
         transform_train = build_cifar_transform(True, args)
         transform_val = build_cifar_transform(False, args)
+    elif 'cgqa' in args.dataset.lower() or 'cobj' in args.dataset.lower():
+        transform_train = build_cgqa_transform(True)
+        transform_val = build_cgqa_transform(False)
     else:
         transform_train = build_transform(True, args)
         transform_val = build_transform(False, args)
@@ -50,6 +55,7 @@ def build_continual_dataloader(args):
 
         splited_dataset, class_mask, target_task_map = split_single_dataset(dataset_train, dataset_val, args)
         splited_dataset_per_cls = split_single_class_dataset(dataset_train_mean, dataset_val_mean, class_mask, args)
+
     else:
         if args.dataset == '5-datasets':
             dataset_list = ['SVHN', 'MNIST', 'CIFAR10', 'NotMNIST', 'FashionMNIST']
@@ -160,6 +166,14 @@ def get_dataset(dataset, transform_train, transform_val, args, target_transform=
         dataset_train = datasets.CIFAR100(args.data_path, train=True, download=True, transform=transform_train)
         dataset_val = datasets.CIFAR100(args.data_path, train=False, download=True, transform=transform_val)
 
+    elif dataset == 'CGQA':
+        dataset_train = CGQA(args.data_path, train=True, download=True, transform=transform_train)
+        dataset_val = CGQA(args.data_path, train=False, download=True, transform=transform_val)
+
+    elif dataset == 'COBJ':
+        dataset_train = COBJ(args.data_path, train=True, download=True, transform=transform_train)
+        dataset_val = COBJ(args.data_path, train=False, download=True, transform=transform_val)
+
     elif dataset == 'CIFAR10':
         dataset_train = datasets.CIFAR10(args.data_path, train=True, download=True, transform=transform_train)
         dataset_val = datasets.CIFAR10(args.data_path, train=False, download=True, transform=transform_val)
@@ -211,18 +225,33 @@ def get_dataset(dataset, transform_train, transform_val, args, target_transform=
 
 
 def split_single_dataset(dataset_train, dataset_val, args):
-    nb_classes = len(dataset_val.classes)
-    # TODO
-    # assert nb_classes % args.num_tasks == 0
-    classes_per_task = math.ceil(nb_classes / args.num_tasks)
+    if 'cgqa' in args.dataset.lower():
+        # big first task
+        labels = [26, 86, 2, 55, 75, 93, 16, 73, 54, 95,
+                  53, 92, 78, 13, 7, 30, 22, 24, 33, 8,
+                  43, 62, 3, 71, 45, 48, 6, 99, 82, 76,
+                  60, 80, 90, 68, 51, 27, 18, 56, 63, 74,
+                  1, 61, 42, 41, 4, 15, 17, 40, 38, 5,
+                  91, 59, 0, 34, 28, 50, 11, 35, 23, 52,
+                  10, 31, 66, 57, 79, 85, 32, 84, 14, 89,
+                  19, 29, 49, 97, 98, 69, 20, 94, 72, 77,
+                  25, 37, 81, 46, 39, 65, 58, 12, 88, 70,
+                  87,36, 21, 83, 9, 96, 67, 64, 47, 44]
+        classes_per_task = [10 * (10 - args.num_tasks + 1), 10]
+    # elif 'cobj' in args.dataset.lower():
+    #     pass
+    else:
+        nb_classes = len(dataset_val.classes)
+        # assert nb_classes % args.num_tasks == 0
+        classes_per_task = math.ceil(nb_classes / args.num_tasks)
 
-    labels = [i for i in range(nb_classes)]
+        labels = [i for i in range(nb_classes)]
+
+        if args.shuffle:
+            random.shuffle(labels)
 
     split_datasets = list()
     mask = list()
-
-    if args.shuffle:
-        random.shuffle(labels)
 
     target_task_map = {}
 
@@ -230,8 +259,12 @@ def split_single_dataset(dataset_train, dataset_val, args):
         train_split_indices = []
         test_split_indices = []
 
-        scope = labels[:classes_per_task]
-        labels = labels[classes_per_task:]
+        if type(classes_per_task) is list:
+            cpt = classes_per_task[0 if i == 0 else 1]
+        else:
+            cpt = classes_per_task
+        scope = labels[:cpt]
+        labels = labels[cpt:]
 
         mask.append(scope)
         for k in scope:
@@ -363,6 +396,58 @@ def build_cifar_transform(is_train, args):
     return transforms.Compose(t)
 
 
+def build_cgqa_transform(is_train, img_size=(224, 224)):
+    if is_train:
+        _train_transform = create_transform(
+            input_size=img_size,
+            is_training=is_train,
+            color_jitter=0.3,
+            auto_augment='rand-m9-mstd0.5-inc1',
+            interpolation='bicubic',
+            re_prob=0.25,
+            re_mode='pixel',
+            re_count=1,
+        )
+        # replace RandomResizedCropAndInterpolation with Resize, for not cropping img and missing concepts
+        _train_transform.transforms[0] = transforms.Resize(img_size, interpolation=InterpolationMode.BICUBIC)
+
+        return _train_transform
+    else:
+        return _build_default_transform(img_size, False)
+
+
+def _build_default_transform(image_size=(128, 228), is_train=True, normalize=True):
+    """
+    Default transforms borrowed from MetaShift.
+    Imagenet normalization.
+    """
+    _train_transform = [
+            transforms.Resize(image_size),  # allow reshape but not equal scaling
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.ToTensor(),
+    ]
+    _eval_transform = [
+            transforms.Resize(image_size),
+            transforms.ToTensor(),
+    ]
+    if normalize:
+        _train_transform.append(transforms.Normalize(
+                mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+            ))
+        _eval_transform.append(transforms.Normalize(
+                mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+            ))
+
+    _default_train_transform = transforms.Compose(_train_transform)
+    _default_eval_transform = transforms.Compose(_eval_transform)
+
+    if is_train:
+        return _default_train_transform
+    else:
+        return _default_eval_transform
+
+
 # This is used for few shot learning
 def split_multiple_dataset(datasets_info, args):
     split_datasets = list()
@@ -444,6 +529,9 @@ def build_upstream_continual_dataloader(args):
         if 'cifar' in dataset.lower():
             transform_train = build_cifar_transform(True, args)
             transform_val = build_cifar_transform(False, args)
+        elif 'cgqa' in args.dataset.lower() or 'cobj' in args.dataset.lower():
+            transform_train = build_cgqa_transform(True)
+            transform_val = build_cgqa_transform(False)
         else:
             transform_train = build_transform(True, args)
             transform_val = build_transform(False, args)

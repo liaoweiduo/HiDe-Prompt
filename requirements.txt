@@ -8,3 +8,4 @@ urllib3
 scipy
 scikit-learn
 numpy
+tqdm
