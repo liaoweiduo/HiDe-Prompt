@@ -4,7 +4,6 @@ seed=42
 #for seed in 42 40 44
 #do
 python -m torch.distributed.launch \
-        --num_tasks 8 \
         --nproc_per_node=8 \
         --use_env main.py \
         cifar100_hideprompt_5e \
@@ -17,13 +16,13 @@ python -m torch.distributed.launch \
         --sched constant \
         --seed $seed \
         --train_inference_task_only \
+        --num_tasks 8 \
         --lr 0.0005
 #done
 
 #for seed in 42 40 44
 #do
 python -m torch.distributed.launch \
-  --num_tasks 8 \
 	--nproc_per_node=8 \
 	--master_port='29501' \
 	--use_env main.py \
@@ -42,5 +41,6 @@ python -m torch.distributed.launch \
 	--sched step \
 	--larger_prompt_lr \
 	--trained_original_model ./output/cgqa_sup21k_multi_centroid_mlp_2_seed$seed \
+  --num_tasks 8 \
 	--output_dir ./output/cgqa_vit_pe_seed$seed
 #done
