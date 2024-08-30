@@ -89,7 +89,7 @@ class CGQA(torch.utils.data.Dataset):
 
         :return data_sets defined by json file and label information.
         """
-        img_folder_path = os.path.join(dataset_root, "CGQA", "GQA_100")
+        img_folder_path = os.path.join(dataset_root, "CFST", "CGQA", "GQA_100")
 
         def preprocess_concept_to_integer(img_info, mapping_tuple_label_to_int_concepts):
             for item in img_info:
@@ -415,7 +415,7 @@ class COBJ(CGQA):
 
         :return data_sets defined by json file and label information.
         """
-        img_folder_path = os.path.join(dataset_root, "COBJ", "annotations")
+        img_folder_path = os.path.join(dataset_root, "CFST", "COBJ", "annotations")
 
         def preprocess_concept_to_integer(img_info, mapping_tuple_label_to_int_concepts):
             for item in img_info:

@@ -11,20 +11,27 @@ import vits.hide_prompt_vision_transformer as hide_prompt_vision_transformer
 def train(args):
     device = torch.device(args.device)
     data_loader, data_loader_per_cls, class_mask, target_task_map = build_continual_dataloader(args)
+
+    model_name_map = {'vit_base_patch16_224': 'ViT-B_16.npz'}
+    model_path = "./checkpoints/" + model_name_map[args.original_model]
     print(f"Creating original model: {args.original_model}")
     original_model = create_model(
             args.original_model,
             pretrained=args.pretrained,
+            checkpoint_path=model_path,
             num_classes=args.nb_classes,
             drop_rate=args.drop,
             drop_path_rate=args.drop_path,
             drop_block_rate=None,
             mlp_structure=args.original_model_mlp_structure,
         )
+
+    model_path = "./checkpoints/" + model_name_map[args.model]
     print(f"Creating model: {args.model}")
     model = create_model(
         args.model,
         pretrained=args.pretrained,
+        checkpoint_path=model_path,
         num_classes=args.nb_classes,
         drop_rate=args.drop,
         drop_path_rate=args.drop_path,

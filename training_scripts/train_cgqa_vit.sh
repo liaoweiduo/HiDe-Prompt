@@ -1,7 +1,8 @@
 #!/bin/bash
 
-for seed in 42 40 44
-do
+seed=42
+#for seed in 42 40 44
+#do
 python -m torch.distributed.launch \
         --num_tasks 8 \
         --nproc_per_node=8 \
@@ -10,17 +11,17 @@ python -m torch.distributed.launch \
         --original_model vit_base_patch16_224 \
         --model vit_base_patch16_224 \
         --batch-size 24 \
-        --data-path ./datasets/ \
+        --data-path ../datasets \
         --output_dir ./output/cgqa_sup21k_multi_centroid_mlp_2_seed$seed \
         --epochs 20 \
         --sched constant \
         --seed $seed \
         --train_inference_task_only \
         --lr 0.0005
-done
+#done
 
-for seed in 42 40 44
-do
+#for seed in 42 40 44
+#do
 python -m torch.distributed.launch \
   --num_tasks 8 \
 	--nproc_per_node=8 \
@@ -31,7 +32,7 @@ python -m torch.distributed.launch \
 	--original_model vit_base_patch16_224 \
 	--batch-size 24 \
 	--epochs 50 \
-	--data-path ./datasets \
+	--data-path ../datasets \
 	--ca_lr 0.005 \
 	--crct_epochs 30 \
 	--seed $seed \
@@ -42,4 +43,4 @@ python -m torch.distributed.launch \
 	--larger_prompt_lr \
 	--trained_original_model ./output/cgqa_sup21k_multi_centroid_mlp_2_seed$seed \
 	--output_dir ./output/cgqa_vit_pe_seed$seed
-done
+#done
