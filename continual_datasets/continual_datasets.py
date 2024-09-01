@@ -57,6 +57,8 @@ class CGQA(torch.utils.data.Dataset):
         else:
             self.targets = test_set.targets
 
+        self.classes = np.unique(self.targets)
+
     def download_dataset(self):
         pass
 
