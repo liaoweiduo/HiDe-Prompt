@@ -12,7 +12,8 @@ def train(args):
     device = torch.device(args.device)
     data_loader, data_loader_per_cls, class_mask, target_task_map = build_continual_dataloader(args)
 
-    model_name_map = {'vit_base_patch16_224': 'ViT-B_16.npz'}
+    # model_name_map = {'vit_base_patch16_224': 'ViT-B_16.npz'}
+    model_name_map = {'vit_base_patch16_224': 'vit_base_patch16_224.pth'}
     model_path = "./checkpoints/" + model_name_map[args.original_model]
     print(f"Creating original model: {args.original_model}")
     original_model = create_model(
