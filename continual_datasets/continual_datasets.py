@@ -59,6 +59,16 @@ class CGQA(torch.utils.data.Dataset):
 
         self.classes = np.unique(self.targets)
 
+    def __getitem__(self, index):
+        if self.train:
+            data = self.train_set[index]
+        else:
+            data = self.test_set[index]
+
+        img, target, ori_idx = data
+
+        return img, target
+
     def download_dataset(self):
         pass
 
