@@ -67,6 +67,11 @@ class CGQA(torch.utils.data.Dataset):
 
         img, target, ori_idx = data
 
+        if self.transform is not None:
+            img = self.transform(img)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
         return img, target
 
     def download_dataset(self):
