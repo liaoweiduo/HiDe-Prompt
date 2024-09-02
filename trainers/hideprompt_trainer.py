@@ -18,8 +18,8 @@ def train(args):
     print(f"Creating original model: {args.original_model}")
     original_model = create_model(
             args.original_model,
-            pretrained=False,     # args.pretrained
-            checkpoint_path=model_path,
+            pretrained=args.pretrained,     # args.pretrained
+            # checkpoint_path=model_path,
             num_classes=args.nb_classes,
             drop_rate=args.drop,
             drop_path_rate=args.drop_path,
@@ -31,8 +31,8 @@ def train(args):
     print(f"Creating model: {args.model}")
     model = create_model(
         args.model,
-        pretrained=False,     # args.pretrained
-        checkpoint_path=model_path,
+        pretrained=args.pretrained,     # args.pretrained
+        # checkpoint_path=model_path,
         num_classes=args.nb_classes,
         drop_rate=args.drop,
         drop_path_rate=args.drop_path,
