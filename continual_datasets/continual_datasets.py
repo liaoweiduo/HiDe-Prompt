@@ -354,9 +354,9 @@ class CGQA(torch.utils.data.Dataset):
             target = img_description[1]
             bbox = None
             concepts, position = None, None
-            if len(img_description) == 3:  # with bbox
-                bbox = img_description[2]
-            elif len(img_description) == 4:
+            if len(img_description) == 3:
+                concepts = img_description[2]
+            if len(img_description) == 4:
                 concepts = img_description[2]
                 position = img_description[3]
 
