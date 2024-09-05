@@ -11,7 +11,7 @@ python -m torch.distributed.launch \
         --model vit_base_patch16_224 \
         --batch-size 24 \
         --data-path ../datasets \
-        --output_dir ./output/cgqa_sup21k_multi_centroid_mlp_2_seed$seed \
+        --output_dir ./output/cgqa_sup21k_multi_centroid1_mlp_2_seed$seed \
         --epochs 20 \
         --sched constant \
         --seed $seed \
@@ -41,8 +41,8 @@ python -m torch.distributed.launch \
 	--length 5 \
 	--sched step \
 	--larger_prompt_lr \
-	--trained_original_model ./output/cgqa_sup21k_multi_centroid_mlp_2_seed$seed \
+	--trained_original_model ./output/cgqa_sup21k_multi_centroid1_mlp_2_seed$seed \
   --num_tasks 10 \
   --n_centroids 1 \
-	--output_dir ./output/cgqa_vit_pe_seed$seed
+	--output_dir ./output/cgqa_vit_pe_centroid1_seed$seed
 done
