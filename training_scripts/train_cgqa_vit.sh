@@ -44,5 +44,5 @@ python -m torch.distributed.launch \
 	--trained_original_model ./output/cgqa_sup21k_multi_centroid1_mlp_2_seed$seed \
   --num_tasks 10 \
   --n_centroids 1 \
-	--output_dir ./output/cgqa_vit_pe_centroid1_seed$seed
+	--output_dir ./output/cgqa_vit_pe_centroid1_seed$seed > ./output/cgqa_vit_pe_centroid1_seed$seed.out
 done
