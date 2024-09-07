@@ -44,5 +44,5 @@ python -m torch.distributed.launch \
 	--trained_original_model ./output/cobj_sup21k_multi_centroid1_mlp_2_seed$seed \
   --num_tasks 3 \
   --n_centroids 1 \
-	--output_dir ./output/cobj_vit_pe_centroid1_seed$seed > ./output/cobj_vit_pe_centroid1_seed${seed}.out
+	--output_dir ./output/cobj_vit_pe_centroid1_seed$seed > ./output/cobj_vit_pe_centroid1_seed${seed}.out 2>&1
 done
