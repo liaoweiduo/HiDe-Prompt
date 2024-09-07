@@ -21,7 +21,7 @@
 #        --lr 0.0005
 #done
 
-for seed in 42 40 44
+for seed in 40 44
 do
 python -m torch.distributed.launch \
 	--nproc_per_node=1 \
