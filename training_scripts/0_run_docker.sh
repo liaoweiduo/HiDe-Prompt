@@ -1,0 +1,1 @@
+docker run --rm --runtime=nvidia --gpus device=2 -v /mnt/datasets/datasets:/datasets -v ~/HiDe-Prompt:/workspace -v ~/HiDe-Prompt/checkpoint  s:/checkpoints -p 3334:22 --shm-size 32G hide:1.0 bash training_scripts/train_cobj_vit.sh
