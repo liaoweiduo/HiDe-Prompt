@@ -38,7 +38,7 @@ python -m torch.distributed.launch \
 	--seed $seed \
 	--prompt_momentum 0.01 \
 	--reg 0.1 \
-	--length 5 \
+	--length 4 \
 	--sched step \
 	--larger_prompt_lr \
 	--trained_original_model ./output/cobj_sup21k_multi_centroid1_mlp_2_seed$seed \

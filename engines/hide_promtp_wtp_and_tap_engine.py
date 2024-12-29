@@ -437,7 +437,7 @@ def train_task_adaptive_prediction(model: torch.nn.Module, args, device, class_m
 
         sampled_data = []
         sampled_label = []
-        num_sampled_pcls = args.batch_size * 5
+        num_sampled_pcls = args.batch_size * 1    # LWD modification: origin *5 -> *1
 
         metric_logger = utils.MetricLogger(delimiter="  ")
         metric_logger.add_meter('Lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))

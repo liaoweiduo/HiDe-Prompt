@@ -70,8 +70,9 @@ def get_args_parser(subparsers):
 
     # Data parameters
     subparsers.add_argument('--data-path', default='/local_datasets/', type=str, help='dataset path')
-    subparsers.add_argument('--dataset', default='Split-COBJ', type=str, help='dataset name')
-    subparsers.add_argument('--shuffle', default=False, help='shuffle the data order')
+    subparsers.add_argument('--dataset', default='Split-CGQA', type=str, help='dataset name')
+    subparsers.add_argument('--data_setting', default='50-10', type=str, help='dataset settings')
+    subparsers.add_argument('--shuffle', action='store_true', help='shuffle the data order')
     subparsers.add_argument('--output_dir', default='./output', help='path where to save, empty for no saving')
     subparsers.add_argument('--device', default='cuda', help='device to use for training / testing')
     subparsers.add_argument('--seed', default=42, type=int)
@@ -89,7 +90,7 @@ def get_args_parser(subparsers):
     subparsers.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
 
     # Continual learning parameters
-    subparsers.add_argument('--num_tasks', default=3, type=int, help='number of sequential tasks')
+    subparsers.add_argument('--num_tasks', default=6, type=int, help='number of sequential tasks')
     subparsers.add_argument('--train_mask', default=True, type=bool, help='if using the class mask at training')
     subparsers.add_argument('--task_inc', default=False, type=bool, help='if doing task incremental')
 

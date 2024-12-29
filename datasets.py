@@ -39,7 +39,7 @@ def build_continual_dataloader(args):
         transform_train = build_cifar_transform(True, args)
         transform_val = build_cifar_transform(False, args)
     elif 'cgqa' in args.dataset.lower() or 'cobj' in args.dataset.lower():
-        transform_train = build_cgqa_transform(True)
+        transform_train = build_cgqa_transform(True)    # use default
         transform_val = build_cgqa_transform(False)
     else:
         transform_train = build_transform(True, args)
@@ -241,9 +241,14 @@ def split_single_dataset(dataset_train, dataset_val, args):
     # # elif 'cobj' in args.dataset.lower():
     # #     pass
     # else:
+
     nb_classes = len(dataset_val.classes)
     # assert nb_classes % args.num_tasks == 0
-    classes_per_task = math.ceil(nb_classes / args.num_tasks)
+
+    if hasattr(args, 'data_setting') and args.data_setting == '50-10':  # 50-10-10... 6tasks
+        classes_per_task = [50, 10]
+    else:
+        classes_per_task = math.ceil(nb_classes / args.num_tasks)
 
     labels = [i for i in range(nb_classes)]
 
@@ -281,6 +286,8 @@ def split_single_dataset(dataset_train, dataset_val, args):
         subset_train, subset_val = Subset(dataset_train, train_split_indices), Subset(dataset_val, test_split_indices)
 
         split_datasets.append([subset_train, subset_val])
+
+    print(f'task labels: {mask}')
 
     return split_datasets, mask, target_task_map
 
@@ -398,18 +405,20 @@ def build_cifar_transform(is_train, args):
 
 def build_cgqa_transform(is_train, img_size=(224, 224)):
     if is_train:
-        _train_transform = create_transform(
-            input_size=img_size,
-            is_training=is_train,
-            color_jitter=0.3,
-            auto_augment='rand-m9-mstd0.5-inc1',
-            interpolation='bicubic',
-            re_prob=0.25,
-            re_mode='pixel',
-            re_count=1,
-        )
-        # replace RandomResizedCropAndInterpolation with Resize, for not cropping img and missing concepts
-        _train_transform.transforms[0] = transforms.Resize(img_size, interpolation=InterpolationMode.BICUBIC)
+        _train_transform = _build_default_transform((img_size, True))
+
+        # _train_transform = create_transform(
+        #     input_size=img_size,
+        #     is_training=is_train,
+        #     color_jitter=0.3,
+        #     auto_augment='rand-m9-mstd0.5-inc1',
+        #     interpolation='bicubic',
+        #     re_prob=0.25,
+        #     re_mode='pixel',
+        #     re_count=1,
+        # )
+        # # replace RandomResizedCropAndInterpolation with Resize, for not cropping img and missing concepts
+        # _train_transform.transforms[0] = transforms.Resize(img_size, interpolation=InterpolationMode.BICUBIC)
 
         return _train_transform
     else:

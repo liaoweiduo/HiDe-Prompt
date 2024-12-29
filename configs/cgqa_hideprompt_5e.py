@@ -144,7 +144,7 @@ def get_args_parser(subparsers):
     subparsers.add_argument('--weight_decay', default=5e-4, type=float)
     subparsers.add_argument('--milestones', default=[10], type=int)
     subparsers.add_argument('--trained_original_model', default='', type=str)
-    subparsers.add_argument('--prompt_momentum', default=0.01, type=float)
+    subparsers.add_argument('--prompt_momentum', default=0.0, type=float)
     subparsers.add_argument('--reg', default=0.01, type=float)
     subparsers.add_argument('--not_train_ca', action='store_true')
     subparsers.add_argument('--ca_epochs', default=30, type=int)

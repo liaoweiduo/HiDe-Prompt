@@ -34,6 +34,9 @@ def get_args():
     elif config == 'cgqa_hideprompt_5e':
         from configs.cgqa_hideprompt_5e import get_args_parser
         config_parser = subparser.add_parser('cgqa_hideprompt_5e', help='Split-CGQA HiDe-Prompt configs')
+    elif config == 'cgqa50_10_hideprompt_5e':
+        from configs.cgqa50_10_hideprompt_5e import get_args_parser
+        config_parser = subparser.add_parser('cgqa50_10_hideprompt_5e', help='Split-CGQA HiDe-Prompt configs')
     elif config == 'cobj_hideprompt_5e':
         from configs.cobj_hideprompt_5e import get_args_parser
         config_parser = subparser.add_parser('cobj_hideprompt_5e', help='Split-COBJ HiDe-Prompt configs')
