@@ -405,7 +405,7 @@ def build_cifar_transform(is_train, args):
 
 def build_cgqa_transform(is_train, img_size=(224, 224)):
     if is_train:
-        _train_transform = _build_default_transform((img_size, True))
+        _train_transform = _build_default_transform(img_size, True)
 
         # _train_transform = create_transform(
         #     input_size=img_size,
