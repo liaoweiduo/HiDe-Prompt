@@ -3,9 +3,6 @@
 #seed=42
 for seed in 0 1 2     # 42 40 44
 do
-docker run --rm --runtime=nvidia --gpus device=1 \
-  -v /mnt/datasets/datasets:/datasets -v ~/HiDe-Prompt:/workspace -v ~/HiDe-Prompt/checkpoints:/checkpoints \
-  -p 3334:22 --shm-size 32G hide:1.0 \
 python -m torch.distributed.launch \
         --nproc_per_node=1 \
         --use_env main.py \
@@ -23,9 +20,6 @@ python -m torch.distributed.launch \
         --shuffle \
         --lr 0.0005 > ./output/cgqa50_10_sup21k_multi_centroid1_mlp_2_seed${seed}.out 2>&1
 
-docker run --rm --runtime=nvidia --gpus device=1 \
-  -v /mnt/datasets/datasets:/datasets -v ~/HiDe-Prompt:/workspace -v ~/HiDe-Prompt/checkpoints:/checkpoints \
-  -p 3334:22 --shm-size 32G hide:1.0 \
 python -m torch.distributed.launch \
 	--nproc_per_node=1 \
 	--master_port='29501' \
